@@ -24,7 +24,7 @@
         <div class="task-card" style="padding: 20px;">
             <form action="${pageContext.request.contextPath}/tarefa" method="post">
                 <input type="hidden" name="action" value="insert">
-
+                
                 <div style="margin-bottom: 15px;">
                     <label>Título da Tarefa:</label><br>
                     <input type="text" name="nome" required style="width: 100%; padding: 8px;">
@@ -40,14 +40,6 @@
                     <input type="date" name="dataEntrega" style="padding: 8px;">
                 </div>
 
-                <div style="margin-bottom: 15px;">
-                    <label>Projeto:</label><br>
-                    <select name="projetoId" style="padding: 8px;">
-                        <option value="1">Projeto 1</option>
-                        <option value="2">Minha Casa Própria</option>
-                    </select>
-                </div>
-                
                 <button type="submit" class="action-btn" style="background-color: #28a745; color: white; width: auto; padding: 10px 20px;">
                     Salvar Tarefa
                 </button>

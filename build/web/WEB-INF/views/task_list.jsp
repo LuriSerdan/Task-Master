@@ -6,13 +6,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TaskMaster - Tarefas</title>
-    <!-- Incluindo o CSS que criamos na estrutura de assets -->
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/index.css">
     
-    <!-- Ícone de Informação (Simulado com SVG para o design) -->
     <style>
         .info-icon {
-            /* Usando um SVG inline simples para o ícone de informação do mockup */
             display: inline-block;
             width: 24px;
             height: 24px;
@@ -26,7 +23,6 @@
 </head>
 <body>
 
-    <!-- Header (Navegação) -->
     <header class="header">
         <div class="logo">
             <div class="logo-icon"></div>
@@ -34,36 +30,31 @@
         </div>
         <nav class="nav-links">
             <a href="${pageContext.request.contextPath}/tarefa?action=new">New Task</a>
-            <a href="#">Projects</a>
+            <a href="#" style="opacity: 0.5; cursor: default;">Projects</a>
         </nav>
         <div class="nav-buttons">
-            <button class="log-out-btn">Log Out</button>
+            <button class="log-out-btn" onclick="window.location.href='${pageContext.request.contextPath}/logout'">
+                Log Out
+            </button>
         </div>
     </header>
 
     <div class="container">
-        <!-- Título e Contexto -->
         <div class="page-header">
             <h1>Tasks</h1>
-            <!-- Usando a EL para exibir o nome do projeto atual (simulado) -->
-            <p>Project: Minha Casa Própria</p>
+            <p>Visão Geral</p>
         </div>
         
-        <!-- Barra de Ações (Filtro de Projetos) -->
         <div class="actions-bar">
             <select class="dropdown-project" onchange="window.location.href='${pageContext.request.contextPath}/tarefa?action=list&projectId=' + this.value">
-                <option value="0">Todos os Projetos</option> <option value="1" ${selectedProjectId == '1' ? 'selected' : ''}>Projeto 1</option>
-                <option value="2" ${selectedProjectId == '2' ? 'selected' : ''}>Minha Casa Própria</option>
-                <option value="3" ${selectedProjectId == '3' ? 'selected' : ''}>Outro Projeto</option>
+                <option value="0">Todos os Projetos</option>
             </select>
         </div>
 
-        <!-- LISTA DE TAREFAS (JSTL Loop) -->
         <div class="task-list">
             <c:forEach var="tarefa" items="${listaTarefas}">
                 <div class="task-card">
                     <div class="task-info">
-                        <!-- Ícone de Informação/Detalhes -->
                         <svg class="info-icon" viewBox="0 0 24 24">
                             <circle cx="12" cy="12" r="10"></circle>
                             <line x1="12" y1="16" x2="12" y2="12"></line>
@@ -71,16 +62,13 @@
                         </svg>
 
                         <div class="task-title-area">
-                            <!-- Usando EL para exibir Nome e Descrição da Tarefa -->
                             <h2 class="task-title">${tarefa.nome}</h2>
                             <p class="task-description">${tarefa.descricao}</p>
                             
-                            <!-- Exibição Condicional de Data de Entrega/Status (Exemplo de Validação EL) -->
                             <c:if test="${not empty tarefa.dataEntrega}">
                                 <small style="color: #c00;">Entregar até: ${tarefa.dataEntrega}</small>
                             </c:if>
                             
-                            <!-- Exemplo de como você pode usar o statusId para estilizar -->
                             <c:if test="${tarefa.statusId == 3}">
                                 <small style="color: var(--primary-color); font-weight: bold;"> (Concluída)</small>
                             </c:if>
@@ -88,15 +76,25 @@
                     </div>
 
                     <div class="task-actions">
-                        <!-- Botão de Concluir (Simulado com V de check) -->
-                        <button class="action-btn btn-complete" title="Marcar como Concluída">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                              <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.04-.02L2.003 7.825a.733.733 0 0 1 1.04-.022L7.003 10.5V4.74z"/>
-                            </svg>
-                        </button>
                         
-                        <!-- Botão de Deletar (Simulado com Lixeira) -->
-                        <!-- A URL aqui apontaria para o Controller, ex: /tarefa?action=delete&id=${tarefa.id} -->
+                        <c:choose>
+                            <c:when test="${tarefa.statusId == 3}">
+                                <button class="action-btn" style="background-color: #ccc; cursor: default; border-color: #ccc;" title="Já concluída">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16">
+                                      <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.04-.02L2.003 7.825a.733.733 0 0 1 1.04-.022L7.003 10.5V4.74z"/>
+                                    </svg>
+                                </button>
+                            </c:when>
+                            <c:otherwise>
+                                <button class="action-btn btn-complete" title="Marcar como Concluída"
+                                        onclick="window.location.href='${pageContext.request.contextPath}/tarefa?action=complete&id=${tarefa.id}'">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                      <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.04-.02L2.003 7.825a.733.733 0 0 1 1.04-.022L7.003 10.5V4.74z"/>
+                                    </svg>
+                                </button>
+                            </c:otherwise>
+                        </c:choose>
+                        
                         <button class="action-btn btn-delete" title="Excluir Tarefa"
                                 onclick="if(confirm('Tem certeza que deseja excluir a tarefa: ${tarefa.nome}?')) { 
                                     window.location.href='${pageContext.request.contextPath}/tarefa?action=delete&id=${tarefa.id}' 
@@ -109,7 +107,6 @@
                 </div>
             </c:forEach>
             
-            <!-- Exemplo de JSTL/EL: Se a lista estiver vazia -->
             <c:if test="${empty listaTarefas}">
                 <p style="text-align: center; margin-top: 50px; color: #777;">
                     Nenhuma tarefa encontrada. Clique em "New Task" para começar!

@@ -2,6 +2,7 @@ package br.com.taskmaster.controller;
 
 import br.com.taskmaster.dao.TarefaDAO;
 import br.com.taskmaster.model.Tarefa;
+import br.com.taskmaster.model.Usuario;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -11,6 +12,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 @WebServlet(name = "TarefaController", urlPatterns = {"/tarefa"})
 public class TarefaController extends HttpServlet {
@@ -23,11 +25,27 @@ public class TarefaController extends HttpServlet {
         tarefaDAO = new TarefaDAO();
     }
 
-    // GET: Para navegação (Listar ou Abrir Formulário)
+    // --- Método auxiliar de segurança ---
+    private Usuario verificarUsuarioLogado(HttpServletRequest request, HttpServletResponse response) 
+            throws IOException {
+        HttpSession session = request.getSession();
+        Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
+        
+        if (usuario == null) {
+            // Se não estiver logado, manda para a tela de login
+            response.sendRedirect("login"); // Certifique-se que o LoginController atende em /login
+            return null;
+        }
+        return usuario;
+    }
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
+        // Verifica segurança antes de qualquer coisa
+        if (verificarUsuarioLogado(request, response) == null) return;
+
         String action = request.getParameter("action");
         if (action == null) action = "list";
 
@@ -35,8 +53,11 @@ public class TarefaController extends HttpServlet {
             case "new":
                 mostrarFormularioNovaTarefa(request, response);
                 break;
-            case "delete": // <--- ADICIONE ESTE CASO
+            case "delete":
                 removerTarefa(request, response);
+                break;
+            case "complete": // <--- ADICIONE AQUI
+                concluirTarefa(request, response);
                 break;
             case "list":
             default:
@@ -45,18 +66,19 @@ public class TarefaController extends HttpServlet {
         }
     }
 
-    // POST: Para receber dados de formulários (Insert, Update, Delete)
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        // Importante para aceitar acentos vindo do formulário
-        request.setCharacterEncoding("UTF-8");
+        // Verifica segurança e captura o usuário para usar no insert
+        Usuario usuarioLogado = verificarUsuarioLogado(request, response);
+        if (usuarioLogado == null) return;
 
+        request.setCharacterEncoding("UTF-8");
         String action = request.getParameter("action");
         
         if ("insert".equals(action)) {
-            inserirTarefa(request, response);
+            inserirTarefa(request, response, usuarioLogado);
         } else {
             listarTarefas(request, response);
         }
@@ -67,46 +89,49 @@ public class TarefaController extends HttpServlet {
     private void listarTarefas(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        List<Tarefa> listaTarefas;
+        // Pega o usuário da sessão (já validamos no doGet que ele existe)
+        HttpSession session = request.getSession();
+        Usuario usuarioLogado = (Usuario) session.getAttribute("usuarioLogado");
         
-        // 1. Verifica se veio o parametro "projectId" do filtro (lá do JSP)
+        List<Tarefa> listaTarefas;
         String projetoIdStr = request.getParameter("projectId");
         
-        // 2. Decide qual método do DAO chamar
         if (projetoIdStr != null && !projetoIdStr.isEmpty() && !projetoIdStr.equals("0")) {
-            // Se tem ID, chama o método com filtro (WHERE)
             int projetoId = Integer.parseInt(projetoIdStr);
-            listaTarefas = tarefaDAO.listarPorProjeto(projetoId);
-            
-            // Devolve o ID para o JSP saber qual option deixar marcada (selected)
+            // Agora passamos o ID do projeto E o ID do usuário
+            listaTarefas = tarefaDAO.listarPorProjeto(projetoId, usuarioLogado.getId());
             request.setAttribute("selectedProjectId", projetoIdStr);
         } else {
-            // Se não tem ID (ou é "0" - Todos), traz tudo
-            listaTarefas = tarefaDAO.listar();
+            // Chama o método novo que filtra por usuário
+            listaTarefas = tarefaDAO.listarPorUsuario(usuarioLogado.getId());
         }
 
-        // 3. Manda pra View
         request.setAttribute("listaTarefas", listaTarefas);
         request.getRequestDispatcher("/WEB-INF/views/task_list.jsp").forward(request, response);
     }
 
-    private void inserirTarefa(HttpServletRequest request, HttpServletResponse response)
+    private void mostrarFormularioNovaTarefa(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        request.getRequestDispatcher("/WEB-INF/views/task_form.jsp").forward(request, response);
+    }
+
+    private void inserirTarefa(HttpServletRequest request, HttpServletResponse response, Usuario usuarioLogado)
             throws ServletException, IOException {
         
-        // 1. Pegar parâmetros do form
         String nome = request.getParameter("nome");
         String descricao = request.getParameter("descricao");
         String dataEntregaStr = request.getParameter("dataEntrega");
         String projetoIdStr = request.getParameter("projetoId");
 
-        // 2. Preencher objeto Tarefa
         Tarefa t = new Tarefa();
         t.setNome(nome);
         t.setDescricao(descricao);
-        t.setDataCriacao(new Date()); // Data de hoje
-        t.setStatusId(1); // 1 = Pendente
+        t.setDataCriacao(new Date());
+        t.setStatusId(1); // Pendente
+        
+        // Define o usuário logado como responsável automaticamente
+        t.setResponsavelId(usuarioLogado.getId());
 
-        // Tratamento da Data de Entrega (vem como String yyyy-MM-dd do HTML5)
         try {
             if (dataEntregaStr != null && !dataEntregaStr.isEmpty()) {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -116,39 +141,36 @@ public class TarefaController extends HttpServlet {
             System.out.println("Erro ao converter data: " + e.getMessage());
         }
 
-        // Tratamento do ID do Projeto
         if (projetoIdStr != null && !projetoIdStr.isEmpty()) {
             t.setProjetoId(Integer.parseInt(projetoIdStr));
         }
 
-        // 3. Chamar DAO
         tarefaDAO.inserir(t);
-
-        // 4. Redirecionar para a lista (Evita reenvio de form ao dar F5)
         response.sendRedirect("tarefa?action=list");
     }
-    
-    // Faltou esse método aqui para abrir o JSP de cadastro
-    private void mostrarFormularioNovaTarefa(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        // Apenas encaminha para a página do formulário
-        request.getRequestDispatcher("/WEB-INF/views/task_form.jsp").forward(request, response);
-    }
-    
+
     private void removerTarefa(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        // 1. Pega o ID da URL (?action=delete&id=10)
+        String idStr = request.getParameter("id");
+        if (idStr != null && !idStr.isEmpty()) {
+            int id = Integer.parseInt(idStr);
+            tarefaDAO.deletar(id);
+        }
+        response.sendRedirect("tarefa?action=list");
+    }
+    
+    private void concluirTarefa(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        
         String idStr = request.getParameter("id");
         
         if (idStr != null && !idStr.isEmpty()) {
             int id = Integer.parseInt(idStr);
-            
-            // 2. Chama o DAO para deletar
-            tarefaDAO.deletar(id);
+            tarefaDAO.concluir(id);
         }
-
-        // 3. Redireciona de volta para a lista
+        
+        // Redireciona para a lista para ver a tarefa atualizada
         response.sendRedirect("tarefa?action=list");
     }
     
