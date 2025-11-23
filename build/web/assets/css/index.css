@@ -1,0 +1,211 @@
+/*
+    Estilos CSS para o projeto TaskMaster (arq.css)
+    Baseado no mockup fornecido.
+*/
+
+:root {
+    --primary-color: #38761d; /* Verde escuro */
+    --secondary-color: #f6b26b; /* Laranja/Bege (Para destaque de logo/botões) */
+    --text-dark: #333;
+    --text-light: #fff;
+    --bg-light: #f4f4f4;
+    --card-bg: #fff;
+    --border-color: #ddd;
+    --danger-color: #e06666; /* Vermelho para exclusão */
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* --- Header (Barra de Navegação) --- */
+.header {
+    background-color: var(--card-bg);
+    border-bottom: 1px solid var(--border-color);
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.logo-icon {
+    /* Simulação do ícone do logo */
+    width: 30px;
+    height: 30px;
+    background-color: var(--secondary-color);
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+.nav-links a, .nav-buttons button {
+    text-decoration: none;
+    color: var(--text-dark);
+    padding: 8px 12px;
+    margin-left: 10px;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+    font-weight: 500;
+}
+
+.nav-links a:hover {
+    background-color: #eee;
+}
+
+.log-out-btn {
+    background-color: var(--secondary-color);
+    border: none;
+    cursor: pointer;
+    color: var(--text-dark);
+    font-weight: bold;
+}
+
+.log-out-btn:hover {
+    background-color: #e8a55d;
+}
+
+/* --- Título da Página e Ações --- */
+.page-header {
+    margin: 30px 0 20px 0;
+}
+
+.page-header h1 {
+    font-size: 2rem;
+    margin: 0;
+}
+
+.page-header p {
+    color: #666;
+    margin: 5px 0 0 0;
+}
+
+.actions-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.dropdown-project {
+    padding: 8px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* --- Lista de Tarefas (Task List) --- */
+.task-card {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    padding: 15px;
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.task-info {
+    display: flex;
+    align-items: flex-start;
+}
+
+.task-title-area {
+    flex-grow: 1;
+    margin-left: 10px;
+}
+
+.task-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.task-description {
+    color: #555;
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
+
+.task-actions {
+    margin-top: 10px;
+    display: flex;
+    justify-content: flex-end; /* Alinha botões à direita, como no mockup */
+    gap: 10px;
+}
+
+.action-btn {
+    padding: 8px 15px;
+    border: none;
+    cursor: pointer;
+    border-radius: 6px;
+    font-weight: bold;
+    transition: opacity 0.2s, transform 0.1s;
+}
+
+.action-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.btn-complete {
+    background-color: var(--primary-color);
+    color: var(--text-light);
+}
+
+.btn-delete {
+    background-color: var(--danger-color);
+    color: var(--text-light);
+}
+
+/* Estilo para o ícone de informação (simulado com SVG ou HTML) */
+.info-icon {
+    font-size: 1.5rem;
+    color: #666;
+    line-height: 1;
+}
+
+/* Responsividade Básica */
+@media (max-width: 600px) {
+    .header {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .nav-links, .nav-buttons {
+        width: 100%;
+        display: flex;
+        justify-content: space-around;
+    }
+    .container {
+        padding: 10px;
+    }
+    .actions-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+    .dropdown-project {
+        width: 100%;
+        text-align: center;
+    }
+    .task-card {
+        padding: 10px;
+    }
+}
