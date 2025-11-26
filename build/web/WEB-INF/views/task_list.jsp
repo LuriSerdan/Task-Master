@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TaskMaster - Tarefas</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/index.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/home.css">
     
     <style>
         .info-icon {
@@ -25,31 +25,39 @@
 
     <header class="header">
         <div class="logo">
-            <div class="logo-icon"></div>
+            <img src="${pageContext.request.contextPath}/assets/img/Logo.png" alt="Logo">
             TaskMaster
         </div>
-        <nav class="nav-links">
-            <a href="${pageContext.request.contextPath}/tarefa?action=new">New Task</a>
-            <a href="#" style="opacity: 0.5; cursor: default;">Projects</a>
-        </nav>
-        <div class="nav-buttons">
-            <button class="log-out-btn" onclick="window.location.href='${pageContext.request.contextPath}/logout'">
-                Log Out
-            </button>
+        
+        <div class="links">
+            <nav class="nav-links">
+                <a href="${pageContext.request.contextPath}/tarefa?action=new">New Task</a>
+                <a href="#" style="opacity: 0.5; cursor: default;">Projects</a>
+            </nav>
+            <div class="nav-buttons">
+                <button class="log-out-btn" onclick="window.location.href='${pageContext.request.contextPath}/logout'">
+                    Log Out
+                </button>
+            </div>
         </div>
+        
     </header>
 
     <div class="container">
-        <div class="page-header">
-            <h1>Tasks</h1>
-            <p>Visão Geral</p>
+        <div class="main-content">
+            <div class="page-header">
+                <h1>Tasks</h1>
+                <p class="espaco"></p>
+                <p>- Visão Geral</p>
+            </div>
+        
+            <div class="actions-bar">
+                <select class="dropdown-project" onchange="window.location.href='${pageContext.request.contextPath}/tarefa?action=list&projectId=' + this.value">
+                    <option value="0">Todos os Projetos</option>
+                </select>
+            </div>
         </div>
         
-        <div class="actions-bar">
-            <select class="dropdown-project" onchange="window.location.href='${pageContext.request.contextPath}/tarefa?action=list&projectId=' + this.value">
-                <option value="0">Todos os Projetos</option>
-            </select>
-        </div>
 
         <div class="task-list">
             <c:forEach var="tarefa" items="${listaTarefas}">
