@@ -27,7 +27,18 @@
         <input type="email" name="email" required><br>
 
         <label>Senha:</label>
-        <input type="password" name="senha" required><br><br>
+        <input type="password" name="senha" required><br>
+
+        <label>Função:</label>
+        <select name="funcao" required>
+            <option value="">Selecione uma função</option>
+            <option value="Desenvolvedor">Desenvolvedor</option>
+            <option value="Analista">Analista</option>
+            <option value="Gerente de Projeto">Gerente de Projeto</option>
+            <option value="Gerente">Gerente</option>
+            <option value="Designer">Designer</option>
+            <option value="Tester">Tester</option>
+        </select><br><br>
 
         <button type="submit">Cadastrar</button>
     </form>

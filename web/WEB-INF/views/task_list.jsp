@@ -96,17 +96,13 @@
                         <c:choose>
                             <c:when test="${tarefa.statusId == 3}">
                                 <button class="action-btn" style="background-color: #ccc; cursor: default; border-color: #ccc;" title="Já concluída">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16">
-                                      <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.04-.02L2.003 7.825a.733.733 0 0 1 1.04-.022L7.003 10.5V4.74z"/>
-                                    </svg>
+                                    ✅
                                 </button>
                             </c:when>
                             <c:otherwise>
                                 <button class="action-btn btn-complete" title="Marcar como Concluída"
                                         onclick="window.location.href='${pageContext.request.contextPath}/tarefa?action=complete&id=${tarefa.id}'">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                      <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.04-.02L2.003 7.825a.733.733 0 0 1 1.04-.022L7.003 10.5V4.74z"/>
-                                    </svg>
+                                    ✓
                                 </button>
                             </c:otherwise>
                         </c:choose>
@@ -115,9 +111,7 @@
                                 onclick="if(confirm('Tem certeza que deseja excluir a tarefa: ${tarefa.nome}?')) { 
                                     window.location.href='${pageContext.request.contextPath}/tarefa?action=delete&id=${tarefa.id}' 
                                 }">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1H11Zm1.715 6.096-.853 10.66a1 1 0 0 1-.994.94H4.885a1 1 0 0 1-.994-.94l-.853-10.66h9.713ZM9 5.5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0v-6Zm2 0a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0v-6Z"/>
-                            </svg>
+                            🗑️
                         </button>
                     </div>
                 </div>

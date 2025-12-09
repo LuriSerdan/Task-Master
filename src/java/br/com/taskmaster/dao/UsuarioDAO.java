@@ -32,6 +32,7 @@ public class UsuarioDAO {
                 u.setId(rs.getInt("id"));
                 u.setNome(rs.getString("nome"));
                 u.setEmail(rs.getString("email"));
+                u.setFuncao(rs.getString("funcao"));
                 return u;
             }
 
@@ -43,12 +44,13 @@ public class UsuarioDAO {
     }
 
     public boolean salvar(Usuario usuario) {
-        String sql = "INSERT INTO usuario (nome, email, senha) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO usuario (nome, email, senha, funcao) VALUES (?, ?, ?, ?)";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, usuario.getNome());
             stmt.setString(2, usuario.getEmail());
             stmt.setString(3, usuario.getSenha());
+            stmt.setString(4, usuario.getFuncao());
 
             stmt.executeUpdate();
             return true;
@@ -60,12 +62,13 @@ public class UsuarioDAO {
     }
     
     public boolean cadastrar(Usuario u) {
-        String sql = "INSERT INTO usuario (nome, email, senha) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO usuario (nome, email, senha, funcao) VALUES (?, ?, ?, ?)";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, u.getNome());
             stmt.setString(2, u.getEmail());
             stmt.setString(3, u.getSenha());
+            stmt.setString(4, u.getFuncao());
 
             stmt.executeUpdate();
             return true;
@@ -77,7 +80,7 @@ public class UsuarioDAO {
     }
     public List<Usuario> listar() {
         List<Usuario> lista = new ArrayList<>();
-        String sql = "SELECT id, nome, email FROM usuario ORDER BY nome"; 
+        String sql = "SELECT id, nome, email, funcao FROM usuario ORDER BY nome"; 
 
         try (PreparedStatement stmt = this.conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -87,6 +90,7 @@ public class UsuarioDAO {
                 u.setId(rs.getInt("id")); 
                 u.setNome(rs.getString("nome"));
                 u.setEmail(rs.getString("email"));
+                u.setFuncao(rs.getString("funcao"));
                 
                 lista.add(u);
             }

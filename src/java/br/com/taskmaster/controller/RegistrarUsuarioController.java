@@ -24,11 +24,13 @@ public class RegistrarUsuarioController extends HttpServlet {
         String nome = request.getParameter("nome");
         String email = request.getParameter("email");
         String senha = request.getParameter("senha");
+        String funcao = request.getParameter("funcao");
 
         Usuario novo = new Usuario();
         novo.setNome(nome);
         novo.setEmail(email);
         novo.setSenha(senha);
+        novo.setFuncao(funcao);
 
         UsuarioDAO dao = new UsuarioDAO();
 

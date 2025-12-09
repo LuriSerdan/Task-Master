@@ -103,7 +103,13 @@ public class ProjectController extends HttpServlet {
     private void listarProjetos(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        List<Projeto> listaProjetos = projetoDAO.listar();
+        Usuario usuarioLogado = (Usuario) request.getSession().getAttribute("usuarioLogado");
+        
+        List<Projeto> listaProjetos = projetoDAO.listarPorUsuario(
+            usuarioLogado.getId(), 
+            usuarioLogado.getFuncao()
+        );
+        
         request.setAttribute("listaProjetos", listaProjetos);
 
         request.getRequestDispatcher("/WEB-INF/views/project_list.jsp").forward(request, response);

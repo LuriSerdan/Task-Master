@@ -12,6 +12,45 @@ import java.util.List;
 public class TarefaDAO {
 
     /**
+     * Lista tarefas com base nas permissões do usuário.
+     */
+    public List<Tarefa> listarComPermissoes(int usuarioId, String funcaoUsuario) {
+        List<Tarefa> tarefas = new ArrayList<>();
+        String sql;
+        
+        // Se for Gerente, pode ver todas as tarefas
+        if ("Gerente".equals(funcaoUsuario)) {
+            sql = "SELECT * FROM tarefa ORDER BY data_entrega ASC";
+        } else {
+            // Usuário comum: só vê tarefas dos projetos onde tem acesso
+            sql = "SELECT DISTINCT t.* FROM tarefa t " +
+                  "INNER JOIN projeto p ON t.projeto_id = p.id " +
+                  "LEFT JOIN projeto_usuario pu ON p.id = pu.projeto_id " +
+                  "WHERE p.lider_id = ? OR pu.usuario_id = ? " +
+                  "ORDER BY t.data_entrega ASC";
+        }
+
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            if (!"Gerente".equals(funcaoUsuario)) {
+                stmt.setInt(1, usuarioId);
+                stmt.setInt(2, usuarioId);
+            }
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Tarefa t = criarTarefaDoResultSet(rs);
+                    tarefas.add(t);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao listar tarefas com permissões", e);
+        }
+        return tarefas;
+    }
+
+    /**
      * Lista todas as tarefas do banco de dados.
      */
     public List<Tarefa> listarPorUsuario(int usuarioId) {
@@ -35,6 +74,30 @@ public class TarefaDAO {
         return tarefas;
     }
     
+    /**
+     * Lista todas as tarefas de um projeto (sem filtrar por responsável).
+     */
+    public List<Tarefa> listarTodasTarefasDoProjeto(int projetoId) {
+        List<Tarefa> tarefas = new ArrayList<>();
+        String sql = "SELECT * FROM tarefa WHERE projeto_id = ? ORDER BY data_entrega ASC";
+
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, projetoId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Tarefa t = criarTarefaDoResultSet(rs);
+                    tarefas.add(t);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao listar todas as tarefas do projeto", e);
+        }
+        return tarefas;
+    }
+    
     public void concluir(int id) {
         String sql = "UPDATE tarefa SET status_id = 3 WHERE id = ?";
 
@@ -47,6 +110,46 @@ public class TarefaDAO {
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao concluir tarefa", e);
         }
+    }
+
+    /**
+     * Lista tarefas filtrando por um ID de Projeto específico com permissões.
+     */
+    public List<Tarefa> listarPorProjetoComPermissoes(int projetoId, int usuarioId, String funcaoUsuario) {
+        List<Tarefa> tarefas = new ArrayList<>();
+        String sql;
+        
+        // Se for Gerente, pode ver todas as tarefas do projeto
+        if ("Gerente".equals(funcaoUsuario)) {
+            sql = "SELECT * FROM tarefa WHERE projeto_id = ? ORDER BY data_entrega ASC";
+        } else {
+            // Usuário comum: só vê tarefas do projeto se tiver acesso ao projeto
+            sql = "SELECT t.* FROM tarefa t " +
+                  "INNER JOIN projeto p ON t.projeto_id = p.id " +
+                  "LEFT JOIN projeto_usuario pu ON p.id = pu.projeto_id " +
+                  "WHERE t.projeto_id = ? AND (p.lider_id = ? OR pu.usuario_id = ?) " +
+                  "ORDER BY t.data_entrega ASC";
+        }
+
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, projetoId);
+            if (!"Gerente".equals(funcaoUsuario)) {
+                stmt.setInt(2, usuarioId);
+                stmt.setInt(3, usuarioId);
+            }
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Tarefa t = criarTarefaDoResultSet(rs);
+                    tarefas.add(t);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao listar tarefas por projeto com permissões", e);
+        }
+        return tarefas;
     }
 
     /**

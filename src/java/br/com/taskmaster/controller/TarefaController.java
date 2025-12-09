@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.ArrayList;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -95,34 +96,65 @@ public class TarefaController extends HttpServlet {
         HttpSession session = request.getSession();
         Usuario usuarioLogado = (Usuario) session.getAttribute("usuarioLogado");
         
-        List<Tarefa> listaTarefas;
+        // 1. Primeiro buscar os projetos que o usuário tem acesso
+        List<br.com.taskmaster.model.Projeto> projetosDoUsuario = projetoDAO.listarPorUsuario(
+            usuarioLogado.getId(), 
+            usuarioLogado.getFuncao()
+        );
+        
+        // 2. Buscar todas as tarefas desses projetos
+        List<Tarefa> listaTarefas = new ArrayList<>();
         String projetoIdStr = request.getParameter("projectId");
-        int projetoId = 0; 
-
+        int projetoSelecionado = 0;
+        
         if (projetoIdStr != null && !projetoIdStr.isEmpty()) {
             try {
-                projetoId = Integer.parseInt(projetoIdStr);
+                projetoSelecionado = Integer.parseInt(projetoIdStr);
             } catch (NumberFormatException e) {
-                projetoId = 0;
+                projetoSelecionado = 0;
             }
         }
         
-        if (projetoId > 0) {
-            listaTarefas = tarefaDAO.listarPorProjeto(projetoId, usuarioLogado.getId());
+        if (projetoSelecionado > 0) {
+            // Filtrar por projeto específico (se o usuário tem acesso a ele)
+            boolean temAcesso = false;
+            for (br.com.taskmaster.model.Projeto p : projetosDoUsuario) {
+                if (p.getId() == projetoSelecionado) {
+                    temAcesso = true;
+                    break;
+                }
+            }
+            
+            if (temAcesso) {
+                listaTarefas = tarefaDAO.listarTodasTarefasDoProjeto(projetoSelecionado);
+            }
         } else {
-            listaTarefas = tarefaDAO.listarPorUsuario(usuarioLogado.getId());
+            // Buscar tarefas de todos os projetos que o usuário tem acesso
+            for (br.com.taskmaster.model.Projeto projeto : projetosDoUsuario) {
+                List<Tarefa> tarefasDoProjeto = tarefaDAO.listarTodasTarefasDoProjeto(projeto.getId());
+                listaTarefas.addAll(tarefasDoProjeto);
+            }
         }
 
         request.setAttribute("listaTarefas", listaTarefas);
-        request.setAttribute("listaProjetos", projetoDAO.listar());      
-        request.setAttribute("projetoSelecionado", projetoId);
+        request.setAttribute("listaProjetos", projetosDoUsuario);      
+        request.setAttribute("projetoSelecionado", projetoSelecionado);
 
         request.getRequestDispatcher("/WEB-INF/views/task_list.jsp").forward(request, response);
     }
 
     private void mostrarFormularioNovaTarefa(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.setAttribute("projetos", projetoDAO.listar());
+        
+        HttpSession session = request.getSession();
+        Usuario usuarioLogado = (Usuario) session.getAttribute("usuarioLogado");
+        
+        // Só mostra projetos que o usuário tem acesso
+        request.setAttribute("projetos", projetoDAO.listarPorUsuario(
+            usuarioLogado.getId(), 
+            usuarioLogado.getFuncao()
+        ));
+        
         request.getRequestDispatcher("/WEB-INF/views/task_form.jsp").forward(request, response);
     }
 

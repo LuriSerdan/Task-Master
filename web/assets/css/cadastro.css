@@ -34,7 +34,7 @@ label {
     font-size: 14px;
 }
 
-input { 
+input, select { 
     display: block;      /* faz o margin funcionar corretamente */
     width: 320px;          /* largura desejada */
     max-width: 350px;    /* não cresce além do container */
@@ -43,6 +43,12 @@ input {
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 14px;
+    box-sizing: border-box; /* Garante que padding e border sejam incluídos na largura */
+}
+
+select {
+    cursor: pointer;
+    background-color: white;
 }
 
 button { 

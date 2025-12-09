@@ -38,6 +38,51 @@ public class ProjetoDAO {
         return lista;
     }
 
+    // Método para listar projetos com permissões baseadas no usuário
+    public List<Projeto> listarPorUsuario(int usuarioId, String funcaoUsuario) {
+        List<Projeto> lista = new ArrayList<>();
+        String sql;
+        
+        // Se for Gerente, pode ver todos os projetos
+        if ("Gerente".equals(funcaoUsuario)) {
+            sql = "SELECT id, nome, data_inicio, data_fim, lider_id FROM projeto ORDER BY nome";
+        } else {
+            // Usuário comum: só vê projetos onde é líder ou membro
+            sql = "SELECT DISTINCT p.id, p.nome, p.data_inicio, p.data_fim, p.lider_id " +
+                  "FROM projeto p " +
+                  "LEFT JOIN projeto_usuario pu ON p.id = pu.projeto_id " +
+                  "WHERE p.lider_id = ? OR pu.usuario_id = ? " +
+                  "ORDER BY p.nome";
+        }
+
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            if (!"Gerente".equals(funcaoUsuario)) {
+                stmt.setInt(1, usuarioId);
+                stmt.setInt(2, usuarioId);
+            }
+            
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Projeto p = new Projeto(
+                    rs.getInt("id"),
+                    rs.getString("nome"),
+                    rs.getDate("data_inicio") != null ? rs.getDate("data_inicio").toLocalDate() : null,
+                    rs.getDate("data_fim") != null ? rs.getDate("data_fim").toLocalDate() : null,
+                    rs.getInt("lider_id")
+                );
+                lista.add(p);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return lista;
+    }
+
     public Projeto buscarPorId(int id) {
         String sql = "SELECT id, nome, data_inicio, data_fim, lider_id FROM projeto WHERE id = ?";
 
