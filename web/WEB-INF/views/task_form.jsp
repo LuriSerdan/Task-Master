@@ -21,37 +21,36 @@
             <h1>Nova Tarefa</h1>
         </div>
 
-        <div class="task-card" style="padding: 20px;">
+        <div class="form-container">
             <form action="${pageContext.request.contextPath}/tarefa" method="post">
                 <input type="hidden" name="action" value="insert">
                 
-                <div style="margin-bottom: 15px;">
-                    <label>Título da Tarefa:</label><br>
-                    <input type="text" name="nome" required style="width: 100%; padding: 8px;">
+                <div class="form-group">
+                    <label for="nome">Título da Tarefa:</label>
+                    <input type="text" id="nome" name="nome" class="form-input" required>
                 </div>
 
-                <div style="margin-bottom: 15px;">
-                    <label>Descrição:</label><br>
-                    <textarea name="descricao" rows="4" style="width: 100%; padding: 8px;"></textarea>
+                <div class="form-group">
+                    <label for="descricao">Descrição:</label>
+                    <textarea id="descricao" name="descricao" class="form-textarea" rows="4"></textarea>
                 </div>
 
-                <div style="margin-bottom: 15px;">
-                    <label>Data de Entrega:</label><br>
-                    <input type="date" name="dataEntrega" style="padding: 8px;">
+                <div class="form-group">
+                    <label for="dataEntrega">Data de Entrega:</label>
+                    <input type="date" id="dataEntrega" name="dataEntrega" class="form-input">
                 </div>
                 
-                <div style="margin-bottom: 15px;">
-                    <label>Projeto:</label><br>
-                    <select name="projetoId" required style="width: 100%; padding: 8px;">
+                <div class="form-group">
+                    <label for="projetoId">Projeto:</label>
+                    <select id="projetoId" name="projetoId" class="form-select" required>
                         <option value="">Selecione um projeto</option>
-
                         <c:forEach var="p" items="${projetos}">
                             <option value="${p.id}">${p.nome}</option>
                         </c:forEach>
                     </select>
                 </div>
 
-                <button type="submit" class="action-btn" style="background-color: #28a745; color: white; width: auto; padding: 10px 20px;">
+                <button type="submit" class="form-submit-btn">
                     Salvar Tarefa
                 </button>
             </form>

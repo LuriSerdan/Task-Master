@@ -102,6 +102,7 @@ img {
 
 .page-header {
     margin: 30px 0 20px 0;
+    text-align: center;
 }
 
 .page-header h1 {
@@ -133,11 +134,127 @@ img {
 .task-card {
     background-color: var(--card-bg);
     border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-    padding: 15px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
     margin-bottom: 15px;
     display: flex;
     flex-direction: column;
+}
+
+/* --- Formulários --- */
+.form-container {
+    max-width: 500px;
+    margin: 0 auto;
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text-dark);
+    font-size: 14px;
+}
+
+.form-input, .form-select, .form-textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    color: var(--text-dark);
+    background-color: #fff;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    box-sizing: border-box;
+}
+
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(56, 118, 29, 0.1);
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.checkbox-group {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 15px;
+    max-height: 200px;
+    overflow-y: auto;
+    background: #fafafa;
+    margin-top: 8px;
+}
+
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    padding: 5px 0;
+}
+
+.checkbox-item:last-child {
+    margin-bottom: 0;
+}
+
+.checkbox-item input[type="checkbox"] {
+    margin-right: 10px;
+    width: auto;
+    transform: scale(1.1);
+}
+
+.checkbox-item label {
+    font-weight: normal;
+    cursor: pointer;
+    margin: 0;
+    flex: 1;
+    font-size: 14px;
+}
+
+.form-submit-btn {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.1s;
+    margin-top: 10px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.form-submit-btn:hover {
+    background-color: #2d5e19;
+    transform: translateY(-1px);
+}
+
+.empty-state {
+    color: #777;
+    font-size: 14px;
+    font-style: italic;
+    text-align: center;
+    padding: 10px;
+}
+
+.form-helper-text {
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+    font-style: italic;
 }
 
 .task-info {
@@ -225,5 +342,27 @@ img {
     }
     .task-card {
         padding: 10px;
+    }
+    
+    /* Responsividade para formulários */
+    .form-container {
+        padding: 20px 15px;
+        margin: 10px;
+        max-width: none;
+    }
+    
+    .checkbox-group {
+        max-height: 150px;
+        padding: 10px;
+    }
+    
+    .form-submit-btn {
+        width: 100%;
+        padding: 15px;
+        font-size: 16px;
+    }
+    
+    .page-header h1 {
+        font-size: 1.5rem;
     }
 }
